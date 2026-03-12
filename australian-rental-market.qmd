@@ -1,0 +1,43 @@
+---
+title: "Australian Rental Market in 2026"
+author: "Mili Shah"
+date: "March 16, 2026"
+format: pdf
+editor: visual
+editor_options: 
+  chunk_output_type: inline
+---
+
+## Set up
+
+```{r}
+#| label: load-packages-data
+#| message: false
+#| warning: false
+
+# load packages
+library(tidyverse)
+library(tidymodels)
+library(knitr)  
+library(readr)
+
+# load data sets
+market_data <- read_csv("data/australian_rental_market_2026.csv")
+
+market_data |> count()
+sum(is.na(market_data))
+colSums(is.na(market_data))
+
+```
+
+Analyze this public dataset containing information on a housing rental market. Conduct your analysis with an original script written by you using any appropriate tool, including but not limited to Python or R: [Australian Rental Market Data 2026](https://www.kaggle.com/datasets/kanchana1990/australian-rental-market-data-2026)
+
+1.  Describe the quality of the data and clean it appropriately.
+
+2.  Analyze an important aspect of the data using a supervised or unsupervised model and justify your modeling choices using statistical criteria.
+
+3.  Construct a visualization conveying the implications or impact of your model.
+
+4.  Describe potential next steps, considering both value and level of effort.
+
+\pagebreak
