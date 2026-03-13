@@ -20,13 +20,88 @@ library(tidyverse)
 library(tidymodels)
 library(knitr)  
 library(readr)
+library(patchwork)
 
 # load data sets
-market_data <- read_csv("data/australian_rental_market_2026.csv")
+rentalmarket <- read_csv("data/australian_rental_market_2026.csv")
 
-market_data |> count()
-sum(is.na(market_data))
-colSums(is.na(market_data))
+# observe where na exists
+sum(is.na(rentalmarket))
+colSums(is.na(rentalmarket))
+
+# remove duplicate rows
+rentalmarket_unique <- unique(rentalmarket)
+rentalmarket |> count(street_address) |> arrange(desc(n))
+
+# see which row was duplicated
+rentalmarket |> 
+  filter(duplicated(rentalmarket))
+
+# 2 things with longitude: 145.7229, latitude: -17.01989
+```
+
+```{r}
+#| label: EDA
+
+rentalmarket |>
+  ggplot(aes(x=price_display)) +
+  geom_density()
+
+# rentalmarket |>
+#   ggplot(aes(y=price_display, x = bathrooms)) +
+#   geom_point() +
+#   labs(title = "Price x Bathrooms")
+# 
+# rentalmarket |>
+#   ggplot(aes(y=price_display, x = bedrooms)) +
+#   geom_point() +
+#   labs(title = "Price x Bedrooms")
+# 
+# rentalmarket |>
+#   ggplot(aes(y=price_display, x = parking_spaces)) +
+#   geom_point() +
+#   labs(title = "Price x Parking Spaces")
+
+rentalmarket |>
+  ggplot(aes(y = price_display)) +
+  geom_boxplot()
+
+median(rentalmarket$price_display)
+```
+
+```{r}
+library(ozmaps)
+library(ggplot2)
+library(sf)
+library(corrplot)
+
+sf_oz <- ozmap("states")
+
+ggplot() +
+  geom_sf(data = sf_oz, fill = "lightblue", color = "black") +
+  geom_point(data = rentalmarket_unique,
+             aes(x = longitude, y = latitude, color = price_display),
+             size = 3) +
+  scale_color_viridis_c(option = "plasma", name = "Price") +
+  labs(title = "Price Mapping") +
+  theme_void() +
+  coord_sf()
+
+num_rentalmarket <- rentalmarket |>
+  select(price_display,
+         latitude,
+         longitude,
+         postcode,
+         bathrooms,
+         bedrooms,
+         parking_spaces)
+cor_matrix <- cor(num_rentalmarket, method = "spearman")
+
+corrplot(cor_matrix, method = "color", type = "upper", # Display upper triangle only
+         order = "hclust", # Cluster variables by correlation similarity
+         tl.col = "black", tl.srt = 45, # Text label color and rotation
+         addCoef.col = "black", # Add coefficients to the plot
+         sig.level = 0.05, insig = "blank") # Leave blank non-significant correlations
 
 ```
 
